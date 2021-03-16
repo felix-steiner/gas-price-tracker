@@ -1,3 +1,4 @@
+[![Java CI with Gradle](https://github.com/felix-steiner/gas-price-tracker/actions/workflows/gradle.yml/badge.svg)](https://github.com/felix-steiner/gas-price-tracker/actions/workflows/gradle.yml)
 # Gas Price Tracker ⛽
 The Gas Price Tracker is a simple Java application, which periodically performs API calls for gathering information about gas prices around your area. This data is stored in a PostgreSQL database and can be accessed via a REST API made with Spring. Both Java application and database can be deployed using Docker 🐳.
 
