@@ -8,13 +8,13 @@ public class GasStationDTO {
     @JsonProperty("name")
     private String name;
     @JsonProperty("companyName")
-    private Object companyName;
+    private String companyName;
     @JsonProperty("updatedOn")
     private Integer updatedOn;
     @JsonProperty("street")
     private String street;
     @JsonProperty("zipcode")
-    private Integer zipcode;
+    private String zipcode;
     @JsonProperty("city")
     private String city;
     @JsonProperty("point")
@@ -59,12 +59,12 @@ public class GasStationDTO {
     }
 
     @JsonProperty("companyName")
-    public Object getCompanyName() {
+    public String getCompanyName() {
         return companyName;
     }
 
     @JsonProperty("companyName")
-    public void setCompanyName(Object companyName) {
+    public void setCompanyName(String companyName) {
         this.companyName = companyName;
     }
 
@@ -89,12 +89,12 @@ public class GasStationDTO {
     }
 
     @JsonProperty("zipcode")
-    public Integer getZipcode() {
+    public String getZipcode() {
         return zipcode;
     }
 
     @JsonProperty("zipcode")
-    public void setZipcode(Integer zipcode) {
+    public void setZipcode(String zipcode) {
         this.zipcode = zipcode;
     }
 

@@ -1,8 +1,12 @@
 package com.gaspricetracker.gaspricetracker.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gaspricetracker.gaspricetracker.database.GasPriceEntry;
 import com.gaspricetracker.gaspricetracker.models.GasStationDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -13,9 +17,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.List;
 
 @Component
 public class GasPriceService {
+    private final Logger logger = LoggerFactory.getLogger(GasPriceService.class);
 
     private HttpClient httpClient;
     ObjectMapper objectMapper;
@@ -46,16 +52,41 @@ public class GasPriceService {
                 .build();
 
         try {
+            logger.info("Requesting gas prices");
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            JsonNode jsonResponse = objectMapper.readTree(response.body());
-            String gasStations = jsonResponse.get("gasstations").toString();
-            GasStationDTO[] gasStationDTOS = objectMapper.readValue(gasStations, GasStationDTO[].class);
-            for (var gasStation : gasStationDTOS) {
-                System.out.println(gasStation.getName());
-            }
+            String gasStations = objectMapper
+                    .readTree(response.body())
+                    .get("gasstations").toString();
+
+            objectMapper
+                    .readValue(gasStations, new TypeReference<List<GasStationDTO>>() { })
+                    .stream()
+                    .map(this::convertDTOtoEntry)
+                    .forEach(this::storeEntry);
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            logger.error("An unexpected error occurred: " + e.getMessage());
         }
+    }
+
+    private GasPriceEntry convertDTOtoEntry(GasStationDTO gasStationDTO) {
+        Double price = gasStationDTO.getPrice();
+        double dieselPrice = fuel.equals("DIE") && price != null ? price : 0;
+        double petrolPrice = fuel.equals("SUP") && price != null ? price : 0;
+        return new GasPriceEntry(
+                gasStationDTO.getName(),
+                gasStationDTO.getCompanyName(),
+                gasStationDTO.getZipcode(),
+                gasStationDTO.getCity(),
+                gasStationDTO.getStreet(),
+                gasStationDTO.getPoint().getLat(),
+                gasStationDTO.getPoint().getLon(),
+                dieselPrice,
+                petrolPrice
+        );
+    }
+
+    private void storeEntry(GasPriceEntry gasPriceEntry) {
+        logger.info("Storing " + gasPriceEntry.getName() + " to database...");
     }
 }
