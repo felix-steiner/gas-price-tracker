@@ -1,12 +1,13 @@
 package com.gaspricetracker.gaspricetracker.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaspricetracker.gaspricetracker.database.GasPriceEntry;
+import com.gaspricetracker.gaspricetracker.database.GasPriceRepository;
 import com.gaspricetracker.gaspricetracker.models.GasStationDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,9 @@ public class GasPriceService {
     @Value("${lon}")
     private String lon;
 
+    @Autowired
+    private GasPriceRepository gasPriceRepository;
+
     public GasPriceService() {
         this.httpClient = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
@@ -60,7 +64,8 @@ public class GasPriceService {
                     .get("gasstations").toString();
 
             objectMapper
-                    .readValue(gasStations, new TypeReference<List<GasStationDTO>>() { })
+                    .readValue(gasStations, new TypeReference<List<GasStationDTO>>() {
+                    })
                     .stream()
                     .map(this::convertDTOtoEntry)
                     .forEach(this::storeEntry);
@@ -88,5 +93,6 @@ public class GasPriceService {
 
     private void storeEntry(GasPriceEntry gasPriceEntry) {
         logger.info("Storing " + gasPriceEntry.getName() + " to database...");
+        gasPriceRepository.save(gasPriceEntry);
     }
 }

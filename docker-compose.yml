@@ -1,0 +1,13 @@
+version: "3"
+services:
+  db:
+    image: postgres:10.4
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: felix
+      POSTGRES_PASSWORD: pwdformydb
+      POSTGRES_DB: gasprices
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
