@@ -28,8 +28,6 @@ public class GasPriceService {
     ObjectMapper objectMapper;
     private final String apiEndpoint = "https://www.vol.at/api/services/get_gas_stations";
 
-    @Value("${fuel}")
-    private String fuel;
     @Value("${lat}")
     private String lan;
     @Value("${lon}")
@@ -45,9 +43,9 @@ public class GasPriceService {
         this.objectMapper = new ObjectMapper();
     }
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRateString = "${rate}")
     public void requestGasPrices() {
-        String url = String.format("%s?fuel=%s&devicePosition[lat]=%s&devicePosition[lon]=%s", apiEndpoint, fuel, lan, lon);
+        String url = String.format("%s?fuel=DIE&devicePosition[lat]=%s&devicePosition[lon]=%s", apiEndpoint, lan, lon);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .timeout(Duration.ofMinutes(1))
@@ -68,16 +66,23 @@ public class GasPriceService {
                     })
                     .stream()
                     .map(this::convertDTOtoEntry)
-                    .forEach(this::storeEntry);
+                    .forEach(this::createGasPriceEntry);
         } catch (IOException | InterruptedException e) {
             logger.error("An unexpected error occurred: " + e.getMessage());
         }
     }
 
+    private void createGasPriceEntry(GasPriceEntry gasPriceEntry) {
+        if(gasPriceEntry.getPrice() == 0) return;
+        logger.info("Storing " + gasPriceEntry.getName() + " to database");
+        gasPriceRepository.save(gasPriceEntry);
+    }
+
+    public List<GasPriceEntry> readGasPriceEntries() {
+        return gasPriceRepository.findAll();
+    }
+
     private GasPriceEntry convertDTOtoEntry(GasStationDTO gasStationDTO) {
-        Double price = gasStationDTO.getPrice();
-        double dieselPrice = fuel.equals("DIE") && price != null ? price : 0;
-        double petrolPrice = fuel.equals("SUP") && price != null ? price : 0;
         return new GasPriceEntry(
                 gasStationDTO.getName(),
                 gasStationDTO.getCompanyName(),
@@ -86,13 +91,7 @@ public class GasPriceService {
                 gasStationDTO.getStreet(),
                 gasStationDTO.getPoint().getLat(),
                 gasStationDTO.getPoint().getLon(),
-                dieselPrice,
-                petrolPrice
+                gasStationDTO.getPrice() != null ? gasStationDTO.getPrice() : 0
         );
-    }
-
-    private void storeEntry(GasPriceEntry gasPriceEntry) {
-        logger.info("Storing " + gasPriceEntry.getName() + " to database...");
-        gasPriceRepository.save(gasPriceEntry);
     }
 }
