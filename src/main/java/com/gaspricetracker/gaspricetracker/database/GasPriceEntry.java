@@ -10,7 +10,7 @@ public class GasPriceEntry {
     @GeneratedValue(strategy = GenerationType.AUTO)
     int id;
     @Column(name = "created_at")
-    Timestamp createdAt;
+    long createdAt;
     String name;
     @Column(name = "company_name")
     String companyName;
@@ -19,12 +19,10 @@ public class GasPriceEntry {
     String street;
     double lat;
     double lon;
-    @Column(name = "diesel_price")
-    double dieselPrice;
-    @Column(name = "petrol_price")
-    double petrolPrice;
+    double price;
 
-    public GasPriceEntry(String name, String companyName, String zipcode, String city, String street, double lat, double lon, double dieselPrice, double petrolPrice) {
+    public GasPriceEntry(String name, String companyName, String zipcode, String city, String street, double lat, double lon, double price) {
+        this.createdAt = new Timestamp(System.currentTimeMillis()).getTime();
         this.name = name;
         this.companyName = companyName;
         this.zipcode = zipcode;
@@ -32,9 +30,10 @@ public class GasPriceEntry {
         this.street = street;
         this.lat = lat;
         this.lon = lon;
-        this.dieselPrice = dieselPrice;
-        this.petrolPrice = petrolPrice;
+        this.price = price;
     }
+
+    public GasPriceEntry() { }
 
     public int getId() {
         return id;
@@ -44,11 +43,11 @@ public class GasPriceEntry {
         this.id = id;
     }
 
-    public Timestamp getTimestamp() {
+    public long getTimestamp() {
         return createdAt;
     }
 
-    public void setTimestamp(Timestamp createdAt) {
+    public void setTimestamp(long createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -108,19 +107,11 @@ public class GasPriceEntry {
         this.lon = lon;
     }
 
-    public double getDieselPrice() {
-        return dieselPrice;
+    public double getPrice() {
+        return price;
     }
 
-    public void setDieselPrice(double dieselPrice) {
-        this.dieselPrice = dieselPrice;
-    }
-
-    public double getPetrolPrice() {
-        return petrolPrice;
-    }
-
-    public void setPetrolPrice(double petrolPrice) {
-        this.petrolPrice = petrolPrice;
+    public void setPrice(double price) {
+        this.price = price;
     }
 }
