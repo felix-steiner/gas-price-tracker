@@ -8,5 +8,5 @@ CREATE TABLE gas_prices (
    street       VARCHAR (50)    NOT NULL,
    lat          NUMERIC (9, 7)  NOT NULL,
    lon          NUMERIC (9, 7)  NOT NULL,
-   price        NUMERIC (4, 3)  NOT NULL
+   price        NUMERIC (4, 3)  NOT NULL    CHECK (price > 0)
 );
