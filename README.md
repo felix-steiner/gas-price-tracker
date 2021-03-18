@@ -22,7 +22,6 @@ The main aim of this project is to gather information about the gas prices aroun
 
 ## Configuration ⚙
 The `application.properties` file (located in `src/main/resources`) allows you to make some configurations:
-- `fuel`: This defines the type of fuel. It can be wheter be `SUP` for petrol or `DIE` for diesel
 - `lat`: Latitude of your position
 - `lon`: Longitude of your position
 - `rate`: The rate (in milliseconds) how often the Java application makes an API call for retrieving new gas price data (e.g. hourly: 3600000)
