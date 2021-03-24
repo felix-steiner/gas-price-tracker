@@ -1,5 +1,5 @@
 const timeseries = [];
-fetch('localhost:8080/gas-prices/chart')
+fetch('http://192.168.0.222:8080/gas-prices/chart')
   .then(response => response.json())
   .then(data => {
     data.forEach(gasStation => {
