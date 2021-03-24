@@ -1,3 +1,6 @@
+# Persistent data from PostgreSQL
+pgdata
+
 HELP.md
 .gradle
 api-service/build/bootJarMainClassName
