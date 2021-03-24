@@ -4,6 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gaspricetracker.gaspricetracker.database.GasPriceEntry;
 import com.gaspricetracker.gaspricetracker.database.GasPriceRepository;
+import com.gaspricetracker.gaspricetracker.database.PriceEntry;
+import com.gaspricetracker.gaspricetracker.database.UniqueGasStationEntry;
+import com.gaspricetracker.gaspricetracker.models.GasPriceChartDTO;
+import com.gaspricetracker.gaspricetracker.models.GasPriceDTO;
 import com.gaspricetracker.gaspricetracker.models.GasStationDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +22,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -73,13 +78,40 @@ public class GasPriceService {
     }
 
     private void createGasPriceEntry(GasPriceEntry gasPriceEntry) {
-        if(gasPriceEntry.getPrice() == 0) return;
+        if (gasPriceEntry.getPrice() == 0) return;
         logger.info("Storing " + gasPriceEntry.getName() + " to database");
         gasPriceRepository.save(gasPriceEntry);
     }
 
     public List<GasPriceEntry> readGasPriceEntries() {
         return gasPriceRepository.findAll();
+    }
+
+    public List<GasPriceChartDTO> readGasPriceEntriesForChart() {
+        List<GasPriceChartDTO> gasPriceChartDTOS = new ArrayList<>();
+
+        for (UniqueGasStationEntry gasStation : gasPriceRepository.findGasStations()) {
+            gasPriceChartDTOS.add(new GasPriceChartDTO(
+                    gasStation.getName(),
+                    gasStation.getCity(),
+                    gasStation.getLat(),
+                    gasStation.getLon(),
+                    new ArrayList<GasPriceDTO>())
+            );
+        }
+
+        for (GasPriceChartDTO gasStation : gasPriceChartDTOS) {
+            List<PriceEntry> gasPrices = gasPriceRepository.findPricesByGasStation(
+                    gasStation.getName(),
+                    gasStation.getLat(),
+                    gasStation.getLon());
+
+            for (var price : gasPrices) {
+                gasStation.getGasPriceDTOS().add(new GasPriceDTO(price.getPrice(), price.getCreatedAt()));
+            }
+        }
+
+        return gasPriceChartDTOS;
     }
 
     private GasPriceEntry convertDTOtoEntry(GasStationDTO gasStationDTO) {
