@@ -1,0 +1,8 @@
+html {
+  font-family: 'Nunito', sans-serif !important;
+}
+
+#chart {
+  width: 600px;
+  height: 600px;
+}
