@@ -1,6 +1,12 @@
 HELP.md
 .gradle
-build/
+api-service/build/bootJarMainClassName
+api-service/build/classes
+api-service/build/generated
+api-service/build/reports
+api-service/build/resources
+api-service/build/test-results
+api-service/build/tmp
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
