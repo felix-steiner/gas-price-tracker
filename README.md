@@ -16,9 +16,12 @@ The main aim of this project is to gather information about the gas prices aroun
 ### Steps
 1. Open a terminal and clone the repository
 2. Switch into the _gas-price-tracker_ directory
-3. Run `docker-compose up` in your terminal
-4. The Gas Price Tracker app should be up and running now 😄
-5. The scraped data can be accessed via the endpoint `localhost:8080/gas-prices`
+3. Optional: Switch into the _api-service_ directory and run `gradlew build` for building a new .jar file
+4. Run `docker-compose up` in your terminal
+5. The Gas Price Tracker app should be up and running now 😄
+
+- Frontend: `localhost:80`
+- Backend: `localhost:8080/gas-prices` or `localhost:8080/gas-prices/chart`
 
 ## Configuration ⚙
 The `application.properties` file (located in `src/main/resources`) allows you to make some configurations:
