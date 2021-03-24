@@ -1,7 +1,7 @@
 version: "3"
 services:
   api:
-    build: .
+    build: ./api-service
     depends_on:
       - db
     ports:
@@ -16,4 +16,4 @@ services:
       POSTGRES_DB: gasprices
     volumes:
       - ./pgdata:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+      - ./db-service/init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
