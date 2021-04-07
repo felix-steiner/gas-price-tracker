@@ -2,6 +2,7 @@ version: "3"
 services:
   web:
     build: ./web-service
+    restart: always
     depends_on:
       - api
       - db
@@ -9,12 +10,14 @@ services:
       - "80:80"
   api:
     build: ./api-service
+    restart: always
     depends_on:
       - db
     ports:
       - "8080:8080"
   db:
     image: postgres:10.4
+    restart: always
     ports:
       - "5432:5432"
     environment:
